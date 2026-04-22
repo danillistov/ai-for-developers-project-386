@@ -1,0 +1,266 @@
+openapi: 3.0.0
+info:
+  title: Calendar Booking API
+  description: |-
+    API contract for a single-owner calendar booking application.
+    The Owner is a pre-configured singleton (no auth/registration) and is therefore
+    not exposed as an API resource. The same HTTP surface serves two roles:
+      * Owner (admin): POST /event-types, GET /event-types, GET /bookings
+      * Guest (public): GET /event-types, GET /event-types/{id}/slots, POST /bookings
+  version: 0.0.0
+tags: []
+paths:
+  /bookings:
+    get:
+      operationId: Bookings_list
+      description: 'Owner-only: list upcoming bookings across all event types, sorted by startTime ascending.'
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+    post:
+      operationId: Bookings_create
+      description: |-
+        Guest: create a new booking.
+        Business rules:
+          * The requested window must match an available slot for the given EventType.
+          * Two bookings must not overlap in time, even across different EventTypes.
+        Error mapping:
+          * 400 — the requested window is not a valid available slot.
+          * 404 — eventTypeId does not exist.
+          * 409 — the window overlaps an existing booking (any EventType).
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: Generic 400 Bad Request response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Generic 404 Not Found response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Generic 409 Conflict response, used when a requested booking overlaps an existing one.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+  /event-types:
+    post:
+      operationId: EventTypes_create
+      description: 'Owner-only: create a new event type.'
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '400':
+          description: Generic 400 Bad Request response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventTypeCreate'
+    get:
+      operationId: EventTypes_list
+      description: List all event types. Used by both the owner (admin view) and guests (public view).
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventType'
+  /event-types/{id}/slots:
+    get:
+      operationId: EventTypes_listSlots
+      description: |-
+        Return free slots for the next 14 days, starting from the current date, for the given EventType.
+        Only available windows are returned (Slot.available is always true).
+        Responds with 404 if the EventType does not exist.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+        '404':
+          description: Generic 404 Not Found response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+components:
+  schemas:
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code, e.g. `validation_failed`, `event_type_not_found`, `booking_conflict`.
+        message:
+          type: string
+          description: Human-readable error message.
+      description: Error payload returned for 4xx responses.
+    Booking:
+      type: object
+      required:
+        - id
+        - eventTypeId
+        - guestName
+        - guestEmail
+        - startTime
+        - endTime
+      properties:
+        id:
+          type: string
+          description: Server-assigned identifier.
+          readOnly: true
+        eventTypeId:
+          type: string
+          description: ID of the EventType the booking is for.
+        guestName:
+          type: string
+          description: Display name provided by the guest.
+        guestEmail:
+          type: string
+          format: email
+          description: Contact email provided by the guest.
+        startTime:
+          type: string
+          format: date-time
+          description: Booking start time (UTC); must match an available slot boundary.
+        endTime:
+          type: string
+          format: date-time
+          description: Booking end time (UTC); startTime + EventType.duration.
+      description: A confirmed booking for a single EventType.
+    BookingCreate:
+      type: object
+      required:
+        - eventTypeId
+        - guestName
+        - guestEmail
+        - startTime
+        - endTime
+      properties:
+        eventTypeId:
+          type: string
+        guestName:
+          type: string
+        guestEmail:
+          type: string
+          format: email
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+      description: Payload for creating a new Booking.
+    EventType:
+      type: object
+      required:
+        - id
+        - name
+        - duration
+      properties:
+        id:
+          type: string
+          description: Server-assigned identifier.
+          readOnly: true
+        name:
+          type: string
+          description: Display name of the event type.
+        description:
+          type: string
+          description: Optional longer description shown to guests.
+        duration:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Event duration in minutes.
+      description: A type of event the owner offers for booking (e.g. a 30-minute intro call).
+    EventTypeCreate:
+      type: object
+      required:
+        - name
+        - duration
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        duration:
+          type: integer
+          format: int32
+          minimum: 1
+      description: Payload for creating a new EventType.
+    Slot:
+      type: object
+      required:
+        - startTime
+        - endTime
+        - available
+      properties:
+        startTime:
+          type: string
+          format: date-time
+          description: Inclusive slot start time (UTC).
+        endTime:
+          type: string
+          format: date-time
+          description: Exclusive slot end time (UTC).
+        available:
+          type: boolean
+          description: Whether the slot is currently free; only free slots are returned by the listing endpoint.
+      description: A candidate time window that a guest may book against an EventType.
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+    variables: {}
