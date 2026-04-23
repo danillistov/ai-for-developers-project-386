@@ -1,0 +1,17 @@
+{
+  "name": "calendar-booking-api-spec",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TypeSpec API contract for the calendar booking application (Design First).",
+  "tspMain": "api.tsp",
+  "scripts": {
+    "compile": "tsp compile .",
+    "emit": "tsp compile . --emit @typespec/openapi3"
+  },
+  "devDependencies": {
+    "@typespec/compiler": "^1.11.0",
+    "@typespec/http": "^1.11.0",
+    "@typespec/openapi3": "^1.11.0",
+    "@typespec/rest": "^0.81.0"
+  }
+}
