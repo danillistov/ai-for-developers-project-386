@@ -44,3 +44,37 @@ Rules:
 - Source files: `api.tsp`, `tspconfig.yaml`, `package.json`, `package-lock.json`
 - Generated output: `tsp-output/` (commit the generated OpenAPI spec alongside the source)
 - Never commit: `node_modules/`
+
+## Pull Requests
+
+### Title
+
+Same format as commit messages: `<type>(<scope>): <short imperative description>`
+
+Examples:
+- `feat(api): add TypeSpec contract for calendar booking`
+- `fix(bookings): reject overlapping time windows`
+
+Rules:
+- under 72 characters
+- present tense, imperative mood
+- no period at the end
+
+### Body structure
+
+```
+## Summary
+- <bullet: what changed and why>
+
+## Changes
+- <bullet per logical change>
+
+## Test plan
+- [ ] <manual or automated verification step>
+```
+
+Rules:
+- **Summary** — 1–3 bullets explaining *why* the change exists, not just *what* it does
+- **Changes** — enumerate the significant files / areas touched
+- **Test plan** — at minimum one checkbox; use `[x]` for already-verified steps
+- Keep the body focused; avoid repeating the commit history verbatim
