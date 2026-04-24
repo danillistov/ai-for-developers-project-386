@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__vuetify-mcp__get_vuetify0_composable_guide"
+    ]
+  }
+}
