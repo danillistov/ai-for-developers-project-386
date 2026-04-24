@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: var(--v0-primary);
+  --color-surface: var(--v0-surface);
+  --color-on-primary: var(--v0-on-primary);
+  --color-on-surface: var(--v0-on-surface);
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background: var(--v0-surface);
+  color: var(--v0-on-surface);
+}
