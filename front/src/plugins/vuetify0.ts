@@ -1,5 +1,5 @@
 import type { App } from 'vue'
-import { createThemePlugin } from '@vuetify/v0'
+import { createNotificationsPlugin, createThemePlugin } from '@vuetify/v0'
 
 export default function vuetify0(app: App) {
   app.use(
@@ -27,4 +27,6 @@ export default function vuetify0(app: App) {
       },
     }),
   )
+
+  app.use(createNotificationsPlugin({ timeout: 4000 }))
 }
