@@ -2,6 +2,8 @@
 import type { EventTypeCreate } from '@/services/api'
 import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
 import { ref } from 'vue'
+import AppAlert from '@/components/AppAlert.vue'
+import AppEmptyState from '@/components/AppEmptyState.vue'
 import EventTypeCard from '@/components/EventTypeCard.vue'
 import EventTypeForm from '@/components/EventTypeForm.vue'
 import { useNotify } from '@/composables/useNotify'
@@ -9,7 +11,7 @@ import { eventTypesApi } from '@/services/api'
 
 const queryCache = useQueryCache()
 const notify = useNotify()
-const formRef = ref<InstanceType<typeof EventTypeForm> | null>(null)
+const formKey = ref(0)
 
 const { data, isLoading, error } = useQuery({
   key: ['event-types'],
@@ -20,7 +22,7 @@ const { mutate: create, isLoading: creating, error: createError } = useMutation(
   mutation: (body: EventTypeCreate) => eventTypesApi.create(body),
   onSuccess: (created) => {
     queryCache.invalidateQueries({ key: ['event-types'] })
-    formRef.value?.reset()
+    formKey.value++
     notify.success('Тип события создан', `${created.name} · ${created.duration} мин`)
   },
   onError: err => notify.error('Не удалось создать тип', err.message),
@@ -41,7 +43,7 @@ const { mutate: create, isLoading: creating, error: createError } = useMutation(
     </header>
 
     <EventTypeForm
-      ref="formRef"
+      :key="formKey"
       :submitting="creating"
       :server-error="createError ? createError.message : null"
       @submit="create"
@@ -51,22 +53,15 @@ const { mutate: create, isLoading: creating, error: createError } = useMutation(
       <h3 class="mb-2 text-sm font-medium opacity-70">
         Существующие типы
       </h3>
-      <p v-if="isLoading && !data" class="text-sm opacity-70">
+      <p v-if="isLoading && !data" class="text-sm opacity-70" role="status" aria-live="polite">
         Загрузка…
       </p>
-      <p
-        v-else-if="error"
-        class="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
-        role="alert"
-      >
+      <AppAlert v-else-if="error" severity="error">
         {{ error.message }}
-      </p>
-      <p
-        v-else-if="!data || data.length === 0"
-        class="rounded-md border border-dashed border-black/10 p-6 text-center text-sm opacity-70"
-      >
+      </AppAlert>
+      <AppEmptyState v-else-if="!data || data.length === 0">
         Пока пусто — добавьте первый тип.
-      </p>
+      </AppEmptyState>
       <div
         v-else
         class="grid gap-3"

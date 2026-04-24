@@ -4,316 +4,316 @@
  */
 
 export interface paths {
-    "/bookings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Owner-only: list upcoming bookings across all event types, sorted by startTime ascending. */
-        get: operations["Bookings_list"];
-        put?: never;
-        /**
-         * @description Guest: create a new booking.
-         *     Business rules:
-         *       * The requested window must match an available slot for the given EventType.
-         *       * Two bookings must not overlap in time, even across different EventTypes.
-         *     Error mapping:
-         *       * 400 — the requested window is not a valid available slot.
-         *       * 404 — eventTypeId does not exist.
-         *       * 409 — the window overlaps an existing booking (any EventType).
-         */
-        post: operations["Bookings_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/event-types": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description List all event types. Used by both the owner (admin view) and guests (public view). */
-        get: operations["EventTypes_list"];
-        put?: never;
-        /** @description Owner-only: create a new event type. */
-        post: operations["EventTypes_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/event-types/{id}/slots": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * @description Return free slots for the next 14 days, starting from the current date, for the given EventType.
-         *     Only available windows are returned (Slot.available is always true).
-         *     Responds with 404 if the EventType does not exist.
-         */
-        get: operations["EventTypes_listSlots"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  '/bookings': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** @description Owner-only: list upcoming bookings across all event types, sorted by startTime ascending. */
+    get: operations['Bookings_list']
+    put?: never
+    /**
+     * @description Guest: create a new booking.
+     *     Business rules:
+     *       The requested window must match an available slot for the given EventType.
+     *       Two bookings must not overlap in time, even across different EventTypes.
+     *     Error mapping:
+     *       400 — the requested window is not a valid available slot.
+     *       404 — eventTypeId does not exist.
+     *       409 — the window overlaps an existing booking (any EventType).
+     */
+    post: operations['Bookings_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/event-types': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** @description List all event types. Used by both the owner (admin view) and guests (public view). */
+    get: operations['EventTypes_list']
+    put?: never
+    /** @description Owner-only: create a new event type. */
+    post: operations['EventTypes_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/event-types/{id}/slots': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * @description Return free slots for the next 14 days, starting from the current date, for the given EventType.
+     *     Only available windows are returned (Slot.available is always true).
+     *     Responds with 404 if the EventType does not exist.
+     */
+    get: operations['EventTypes_listSlots']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
-export type webhooks = Record<string, never>;
+export type webhooks = Record<string, never>
 export interface components {
-    schemas: {
-        /** @description Error payload returned for 4xx responses. */
-        ApiError: {
-            /** @description Machine-readable error code, e.g. `validation_failed`, `event_type_not_found`, `booking_conflict`. */
-            code: string;
-            /** @description Human-readable error message. */
-            message: string;
-        };
-        /** @description A confirmed booking for a single EventType. */
-        Booking: {
-            /** @description Server-assigned identifier. */
-            readonly id: string;
-            /** @description ID of the EventType the booking is for. */
-            eventTypeId: string;
-            /** @description Display name provided by the guest. */
-            guestName: string;
-            /**
-             * Format: email
-             * @description Contact email provided by the guest.
-             */
-            guestEmail: string;
-            /**
-             * Format: date-time
-             * @description Booking start time (UTC); must match an available slot boundary.
-             */
-            startTime: string;
-            /**
-             * Format: date-time
-             * @description Booking end time (UTC); startTime + EventType.duration.
-             */
-            endTime: string;
-        };
-        /** @description Payload for creating a new Booking. */
-        BookingCreate: {
-            eventTypeId: string;
-            guestName: string;
-            /** Format: email */
-            guestEmail: string;
-            /** Format: date-time */
-            startTime: string;
-            /** Format: date-time */
-            endTime: string;
-        };
-        /** @description A type of event the owner offers for booking (e.g. a 30-minute intro call). */
-        EventType: {
-            /** @description Server-assigned identifier. */
-            readonly id: string;
-            /** @description Display name of the event type. */
-            name: string;
-            /** @description Optional longer description shown to guests. */
-            description?: string;
-            /**
-             * Format: int32
-             * @description Event duration in minutes.
-             */
-            duration: number;
-        };
-        /** @description Payload for creating a new EventType. */
-        EventTypeCreate: {
-            name: string;
-            description?: string;
-            /** Format: int32 */
-            duration: number;
-        };
-        /** @description A candidate time window that a guest may book against an EventType. */
-        Slot: {
-            /**
-             * Format: date-time
-             * @description Inclusive slot start time (UTC).
-             */
-            startTime: string;
-            /**
-             * Format: date-time
-             * @description Exclusive slot end time (UTC).
-             */
-            endTime: string;
-            /** @description Whether the slot is currently free; only free slots are returned by the listing endpoint. */
-            available: boolean;
-        };
-    };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+  schemas: {
+    /** @description Error payload returned for 4xx responses. */
+    ApiError: {
+      /** @description Machine-readable error code, e.g. `validation_failed`, `event_type_not_found`, `booking_conflict`. */
+      code: string
+      /** @description Human-readable error message. */
+      message: string
+    }
+    /** @description A confirmed booking for a single EventType. */
+    Booking: {
+      /** @description Server-assigned identifier. */
+      readonly id: string
+      /** @description ID of the EventType the booking is for. */
+      eventTypeId: string
+      /** @description Display name provided by the guest. */
+      guestName: string
+      /**
+       * Format: email
+       * @description Contact email provided by the guest.
+       */
+      guestEmail: string
+      /**
+       * Format: date-time
+       * @description Booking start time (UTC); must match an available slot boundary.
+       */
+      startTime: string
+      /**
+       * Format: date-time
+       * @description Booking end time (UTC); startTime + EventType.duration.
+       */
+      endTime: string
+    }
+    /** @description Payload for creating a new Booking. */
+    BookingCreate: {
+      eventTypeId: string
+      guestName: string
+      /** Format: email */
+      guestEmail: string
+      /** Format: date-time */
+      startTime: string
+      /** Format: date-time */
+      endTime: string
+    }
+    /** @description A type of event the owner offers for booking (e.g. a 30-minute intro call). */
+    EventType: {
+      /** @description Server-assigned identifier. */
+      readonly id: string
+      /** @description Display name of the event type. */
+      name: string
+      /** @description Optional longer description shown to guests. */
+      description?: string
+      /**
+       * Format: int32
+       * @description Event duration in minutes.
+       */
+      duration: number
+    }
+    /** @description Payload for creating a new EventType. */
+    EventTypeCreate: {
+      name: string
+      description?: string
+      /** Format: int32 */
+      duration: number
+    }
+    /** @description A candidate time window that a guest may book against an EventType. */
+    Slot: {
+      /**
+       * Format: date-time
+       * @description Inclusive slot start time (UTC).
+       */
+      startTime: string
+      /**
+       * Format: date-time
+       * @description Exclusive slot end time (UTC).
+       */
+      endTime: string
+      /** @description Whether the slot is currently free; only free slots are returned by the listing endpoint. */
+      available: boolean
+    }
+  }
+  responses: never
+  parameters: never
+  requestBodies: never
+  headers: never
+  pathItems: never
 }
-export type $defs = Record<string, never>;
+export type $defs = Record<string, never>
 export interface operations {
-    Bookings_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The request has succeeded. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Booking"][];
-                };
-            };
-        };
-    };
-    Bookings_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BookingCreate"];
-            };
-        };
-        responses: {
-            /** @description The request has succeeded and a new resource has been created as a result. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Booking"];
-                };
-            };
-            /** @description Generic 400 Bad Request response. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Generic 404 Not Found response. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Generic 409 Conflict response, used when a requested booking overlaps an existing one. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    EventTypes_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The request has succeeded. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["EventType"][];
-                };
-            };
-        };
-    };
-    EventTypes_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EventTypeCreate"];
-            };
-        };
-        responses: {
-            /** @description The request has succeeded and a new resource has been created as a result. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["EventType"];
-                };
-            };
-            /** @description Generic 400 Bad Request response. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    EventTypes_listSlots: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The request has succeeded. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Slot"][];
-                };
-            };
-            /** @description Generic 404 Not Found response. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
+  Bookings_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The request has succeeded. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Booking'][]
+        }
+      }
+    }
+  }
+  Bookings_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['BookingCreate']
+      }
+    }
+    responses: {
+      /** @description The request has succeeded and a new resource has been created as a result. */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Booking']
+        }
+      }
+      /** @description Generic 400 Bad Request response. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ApiError']
+        }
+      }
+      /** @description Generic 404 Not Found response. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ApiError']
+        }
+      }
+      /** @description Generic 409 Conflict response, used when a requested booking overlaps an existing one. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ApiError']
+        }
+      }
+    }
+  }
+  EventTypes_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The request has succeeded. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['EventType'][]
+        }
+      }
+    }
+  }
+  EventTypes_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['EventTypeCreate']
+      }
+    }
+    responses: {
+      /** @description The request has succeeded and a new resource has been created as a result. */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['EventType']
+        }
+      }
+      /** @description Generic 400 Bad Request response. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ApiError']
+        }
+      }
+    }
+  }
+  EventTypes_listSlots: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The request has succeeded. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Slot'][]
+        }
+      }
+      /** @description Generic 404 Not Found response. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ApiError']
+        }
+      }
+    }
+  }
 }

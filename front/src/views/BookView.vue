@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { BookingCreate, Slot } from '@/services/api'
 import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
-import { Button } from '@vuetify/v0'
 import { computed, ref, shallowRef } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
+import AppAlert from '@/components/AppAlert.vue'
+import AppButton from '@/components/AppButton.vue'
+import AppEmptyState from '@/components/AppEmptyState.vue'
 import BookingDialog from '@/components/BookingDialog.vue'
 import SlotPicker from '@/components/SlotPicker.vue'
 import { useNotify } from '@/composables/useNotify'
 import { bookingsApi, eventTypesApi, HttpError } from '@/services/api'
+import { formatDateTime } from '@/utils/dates'
 
 const props = defineProps<{ id: string }>()
 
@@ -44,19 +47,17 @@ const { mutate: book, isLoading: booking, error: bookError, reset: resetMutation
     queryCache.invalidateQueries({ key: ['bookings'] })
     dialogOpen.value = false
     selected.value = null
-    notify.success(
-      'Бронирование создано',
-      `Ждём вас ${new Date(created.startTime).toLocaleString('ru-RU')}`,
-    )
+    notify.success('Бронирование создано', `Ждём вас ${formatDateTime(created.startTime)}`)
     router.push({ name: 'home' })
   },
   onError: (err) => {
-    if (err instanceof HttpError && err.status === 409)
+    const http = err instanceof HttpError ? err : null
+    if (http?.status === 409)
       notify.error('Слот только что заняли', 'Выберите другое время — список обновлён.')
     else
       notify.error('Не удалось создать бронь', err.message)
 
-    if (err instanceof HttpError && (err.status === 409 || err.status === 400))
+    if (http && (http.status === 409 || http.status === 400))
       queryCache.invalidateQueries({ key: ['event-types', props.id, 'slots'] })
   },
 })
@@ -106,34 +107,23 @@ function onDialogOpen(open: boolean) {
       </p>
     </header>
 
-    <div v-if="eventTypesQ.isLoading.value && !eventType" class="text-sm opacity-70">
+    <p v-if="eventTypesQ.isLoading.value && !eventType" class="text-sm opacity-70" role="status" aria-live="polite">
       Загрузка…
-    </div>
-    <div
-      v-else-if="!eventType"
-      class="rounded-md border border-dashed border-black/10 p-6 text-center text-sm opacity-70"
-    >
+    </p>
+    <AppEmptyState v-else-if="!eventType">
       Такого типа события не существует.
       <div class="mt-2">
-        <Button.Root
-          :as="RouterLink"
-          to="/"
-          class="text-primary underline"
-        >
-          <Button.Content>Вернуться к каталогу</Button.Content>
-        </Button.Root>
+        <AppButton variant="ghost" size="sm" :as="RouterLink" to="/">
+          Вернуться к каталогу
+        </AppButton>
       </div>
-    </div>
-    <div v-else-if="slotsQ.isLoading.value && !slotsQ.data.value" class="text-sm opacity-70">
+    </AppEmptyState>
+    <p v-else-if="slotsQ.isLoading.value && !slotsQ.data.value" class="text-sm opacity-70" role="status" aria-live="polite">
       Загружаем свободные слоты…
-    </div>
-    <div
-      v-else-if="slotsQ.error.value"
-      class="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
-      role="alert"
-    >
+    </p>
+    <AppAlert v-else-if="slotsQ.error.value" severity="error">
       Не удалось получить слоты: {{ slotsQ.error.value.message }}
-    </div>
+    </AppAlert>
     <SlotPicker
       v-else
       :slots="slotsQ.data.value"

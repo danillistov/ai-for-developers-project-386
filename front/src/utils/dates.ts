@@ -19,11 +19,7 @@ function dayKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-/**
- * Build the 14-day window starting today and bucket the given slots by local day.
- * Days with no free slots are still included (empty array) so the calendar UI
- * can render them as disabled.
- */
+// Empty days are included so the calendar can render them as disabled.
 export function groupSlotsByDay(slots: Slot[] | undefined, today: Date = new Date()): DayBucket[] {
   const start = atMidnight(today)
   const buckets: DayBucket[] = []

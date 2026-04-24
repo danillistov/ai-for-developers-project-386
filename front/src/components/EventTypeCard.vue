@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { EventType } from '@/services/api'
-import { Button } from '@vuetify/v0'
 import { RouterLink } from 'vue-router'
+import AppButton from '@/components/AppButton.vue'
 
 defineProps<{
   eventType: EventType
@@ -22,9 +22,7 @@ defineProps<{
           ID: {{ eventType.id }}
         </p>
       </div>
-      <span
-        class="shrink-0 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
-      >
+      <span class="shrink-0 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
         {{ eventType.duration }} мин
       </span>
     </header>
@@ -37,15 +35,12 @@ defineProps<{
     </p>
 
     <div v-if="variant !== 'owner'" class="mt-auto pt-2">
-      <Button.Root
+      <AppButton
         :as="RouterLink"
         :to="{ name: 'book', params: { id: eventType.id } }"
-        class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-on-primary shadow-sm transition-opacity hover:opacity-90"
       >
-        <Button.Content>
-          Выбрать слот →
-        </Button.Content>
-      </Button.Root>
+        Выбрать слот →
+      </AppButton>
     </div>
   </article>
 </template>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { useQuery } from '@pinia/colada'
+import AppAlert from '@/components/AppAlert.vue'
+import AppButton from '@/components/AppButton.vue'
+import AppEmptyState from '@/components/AppEmptyState.vue'
 import EventTypeCard from '@/components/EventTypeCard.vue'
 import { eventTypesApi } from '@/services/api'
 
@@ -20,25 +23,20 @@ const { data, isLoading, error, refresh } = useQuery({
       </p>
     </header>
 
-    <div v-if="isLoading && !data" class="text-sm opacity-70">
+    <p v-if="isLoading && !data" class="text-sm opacity-70" role="status" aria-live="polite">
       Загрузка каталога…
-    </div>
-    <div
-      v-else-if="error"
-      class="flex items-start justify-between gap-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
-      role="alert"
-    >
-      <span>Не удалось загрузить типы событий: {{ error.message }}</span>
-      <button class="underline" type="button" @click="refresh()">
-        Повторить
-      </button>
-    </div>
-    <div
-      v-else-if="!data || data.length === 0"
-      class="rounded-md border border-dashed border-black/10 p-8 text-center text-sm opacity-70"
-    >
+    </p>
+    <AppAlert v-else-if="error" severity="error">
+      Не удалось загрузить типы событий: {{ error.message }}
+      <template #action>
+        <AppButton variant="ghost" size="sm" @click="refresh()">
+          Повторить
+        </AppButton>
+      </template>
+    </AppAlert>
+    <AppEmptyState v-else-if="!data || data.length === 0" padding="lg">
       Владелец ещё не добавил ни одного типа события.
-    </div>
+    </AppEmptyState>
     <div
       v-else
       class="grid gap-4"

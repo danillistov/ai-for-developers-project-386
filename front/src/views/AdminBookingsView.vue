@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useQuery } from '@pinia/colada'
-import { Button } from '@vuetify/v0'
 import { computed } from 'vue'
+import AppAlert from '@/components/AppAlert.vue'
+import AppButton from '@/components/AppButton.vue'
+import AppEmptyState from '@/components/AppEmptyState.vue'
 import { bookingsApi, eventTypesApi } from '@/services/api'
 import { formatDateTime } from '@/utils/dates'
 
@@ -39,34 +41,24 @@ const sorted = computed(() => {
           Все бронирования по всем типам событий, по возрастанию времени.
         </p>
       </div>
-      <Button.Root
-        type="button"
-        class="rounded-md border border-black/10 px-3 py-1.5 text-sm hover:bg-black/5 disabled:opacity-50"
+      <AppButton
+        variant="outline"
         :disabled="bookingsQ.isLoading.value"
         @click="bookingsQ.refresh()"
       >
-        <Button.Content>
-          {{ bookingsQ.isLoading.value ? 'Обновление…' : 'Обновить' }}
-        </Button.Content>
-      </Button.Root>
+        {{ bookingsQ.isLoading.value ? 'Обновление…' : 'Обновить' }}
+      </AppButton>
     </header>
 
-    <div v-if="bookingsQ.isLoading.value && !bookingsQ.data.value" class="text-sm opacity-70">
+    <p v-if="bookingsQ.isLoading.value && !bookingsQ.data.value" class="text-sm opacity-70" role="status" aria-live="polite">
       Загрузка…
-    </div>
-    <p
-      v-else-if="bookingsQ.error.value"
-      class="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
-      role="alert"
-    >
+    </p>
+    <AppAlert v-else-if="bookingsQ.error.value" severity="error">
       {{ bookingsQ.error.value.message }}
-    </p>
-    <p
-      v-else-if="sorted.length === 0"
-      class="rounded-md border border-dashed border-black/10 p-6 text-center text-sm opacity-70"
-    >
+    </AppAlert>
+    <AppEmptyState v-else-if="sorted.length === 0">
       Бронирований пока нет.
-    </p>
+    </AppEmptyState>
     <div v-else class="overflow-x-auto rounded-lg border border-black/10">
       <table class="w-full border-collapse text-sm">
         <thead class="bg-black/5 text-left">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Slot } from '@/services/api'
 import { Button } from '@vuetify/v0'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { formatDayLong, formatDayShort, formatTime, groupSlotsByDay } from '@/utils/dates'
 
 const props = defineProps<{
@@ -15,25 +15,20 @@ const emit = defineEmits<{
 
 const days = computed(() => groupSlotsByDay(props.slots))
 
-const activeKey = ref<string | null>(null)
+const userPickedKey = ref<string | null>(null)
 
-watch(
-  days,
-  (list) => {
-    if (activeKey.value && list.some(d => d.key === activeKey.value))
-      return
-    const firstFree = list.find(d => d.slots.length > 0)
-    activeKey.value = firstFree?.key ?? list[0]?.key ?? null
-  },
-  { immediate: true },
-)
+const activeKey = computed(() => {
+  const list = days.value
+  if (userPickedKey.value && list.some(d => d.key === userPickedKey.value))
+    return userPickedKey.value
+  return list.find(d => d.slots.length > 0)?.key ?? list[0]?.key ?? null
+})
 
 const activeDay = computed(() => days.value.find(d => d.key === activeKey.value) ?? null)
 
 function selectDay(key: string, hasSlots: boolean) {
-  if (!hasSlots)
-    return
-  activeKey.value = key
+  if (hasSlots)
+    userPickedKey.value = key
 }
 </script>
 
