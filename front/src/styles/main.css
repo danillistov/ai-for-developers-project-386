@@ -1,0 +1,120 @@
+@import 'tailwindcss';
+
+/*
+ * Editorial cream theme.
+ * Surface is a warm ivory; "ink" is near-black. Accent is a muted terracotta
+ * used very sparingly (pill indicators, focus rings, highlights).
+ */
+@theme {
+  --color-surface: var(--v0-surface);
+  --color-surface-elevated: var(--v0-surface-elevated);
+  --color-surface-muted: var(--v0-surface-muted);
+  --color-ink: var(--v0-on-surface);
+  --color-ink-soft: #5c5850;
+  --color-ink-faint: #8a8578;
+  --color-primary: var(--v0-primary);
+  --color-on-primary: var(--v0-on-primary);
+  --color-accent: #c65a3a;
+  --color-accent-soft: #f1d9cc;
+  --color-hairline: rgba(10, 10, 10, 0.09);
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Apple Garamond', Georgia, serif;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv11';
+  background: var(--v0-surface);
+  color: var(--v0-on-surface);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Editorial display text */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Subtle ticked label style used for section headers. */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+/* Thin hairline divider that adapts to the ivory surface. */
+.hairline {
+  border-color: var(--color-hairline);
+}
+
+/* Accessible focus ring that matches the warm palette. */
+:where(a, button, [role='button'], input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* A soft card surface that layers over the page background. */
+.surface-card {
+  background: var(--v0-surface-elevated);
+  border: 1px solid var(--color-hairline);
+  border-radius: 18px;
+}
+
+/* Bento-style section on the ivory base — flat, separated by hairlines only. */
+.bento {
+  background: var(--v0-surface-elevated);
+  border: 1px solid var(--color-hairline);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+/* Pill chip used for meta info (duration, counts, etc). */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+  border: 1px solid var(--color-hairline);
+}
+
+.chip-accent {
+  background: var(--color-accent-soft);
+  border-color: transparent;
+  color: #7a2f15;
+}
+
+/* Reusable skeleton shimmer. */
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.08) 50%, rgba(0, 0, 0, 0.04) 100%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 8px;
+}
