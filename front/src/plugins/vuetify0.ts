@@ -1,6 +1,11 @@
 import type { App } from 'vue'
 import { createNotificationsPlugin, createThemePlugin } from '@vuetify/v0'
 
+/**
+ * Editorial cream palette inspired by the reference dashboard:
+ * warm ivory surfaces with near-black ink and a muted terracotta accent.
+ * The surface/on-surface tokens are consumed by Tailwind via `main.css`.
+ */
 export default function vuetify0(app: App) {
   app.use(
     createThemePlugin({
@@ -9,19 +14,25 @@ export default function vuetify0(app: App) {
         light: {
           dark: false,
           colors: {
-            'primary': '#3b82f6',
-            'surface': '#ffffff',
-            'on-primary': '#ffffff',
-            'on-surface': '#212121',
+            'primary': '#141414',
+            'surface': '#f4eee4',
+            'surface-elevated': '#fffbf3',
+            'surface-muted': '#ece5d7',
+            'on-primary': '#fffbf3',
+            'on-surface': '#1a1a1a',
+            'accent': '#c65a3a',
           },
         },
         dark: {
           dark: true,
           colors: {
-            'primary': '#60a5fa',
-            'surface': '#1e1e1e',
-            'on-primary': '#1a1a1a',
-            'on-surface': '#e0e0e0',
+            'primary': '#f4eee4',
+            'surface': '#15130f',
+            'surface-elevated': '#1d1b16',
+            'surface-muted': '#272420',
+            'on-primary': '#15130f',
+            'on-surface': '#f4eee4',
+            'accent': '#e07a55',
           },
         },
       },

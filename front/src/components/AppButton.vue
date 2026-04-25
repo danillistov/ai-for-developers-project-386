@@ -4,8 +4,8 @@ import type { RouteLocationRaw } from 'vue-router'
 import { Button } from '@vuetify/v0'
 import { computed } from 'vue'
 
-type Variant = 'primary' | 'outline' | 'ghost'
-type Size = 'sm' | 'md'
+type Variant = 'primary' | 'outline' | 'ghost' | 'accent'
+type Size = 'sm' | 'md' | 'lg'
 
 const props = withDefaults(defineProps<{
   variant?: Variant
@@ -17,17 +17,22 @@ const props = withDefaults(defineProps<{
   block?: boolean
 }>(), { variant: 'primary', size: 'md', type: 'button', block: false })
 
-const base = 'inline-flex items-center justify-center rounded-md font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50'
+const base
+  = 'inline-flex items-center justify-center gap-1.5 rounded-full font-medium '
+    + 'transition-colors disabled:cursor-not-allowed disabled:opacity-50 '
+    + 'whitespace-nowrap'
 
 const variantClass: Record<Variant, string> = {
-  primary: 'bg-primary text-on-primary shadow-sm hover:opacity-90',
-  outline: 'border border-black/10 hover:bg-black/5',
-  ghost: 'hover:bg-black/5',
+  primary: 'bg-primary text-on-primary hover:bg-[#2a2a2a]',
+  outline: 'border hairline bg-surface-elevated text-ink hover:bg-surface-muted',
+  ghost: 'text-ink-soft hover:bg-surface-muted hover:text-ink',
+  accent: 'bg-accent text-white hover:brightness-95',
 }
 
 const sizeClass: Record<Size, string> = {
-  sm: 'px-2.5 py-1 text-xs',
+  sm: 'px-3 py-1 text-xs',
   md: 'px-4 py-1.5 text-sm',
+  lg: 'px-5 py-2.5 text-sm',
 }
 
 const classes = computed(() => [
@@ -46,8 +51,10 @@ const classes = computed(() => [
     :disabled="disabled"
     :class="classes"
   >
-    <Button.Content>
+    <Button.Content class="flex items-center gap-1.5">
+      <slot name="leading" />
       <slot />
+      <slot name="trailing" />
     </Button.Content>
   </Button.Root>
 </template>

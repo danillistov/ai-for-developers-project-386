@@ -31,7 +31,9 @@ watch(() => props.open, (next) => {
   }
 })
 
-const nameRules = [(v: unknown) => (typeof v === 'string' && v.trim().length > 0) || 'Укажите имя']
+const nameRules = [
+  (v: unknown) => (typeof v === 'string' && v.trim().length > 0) || 'Укажите имя',
+]
 const emailRules = [
   (v: unknown) => (typeof v === 'string' && v.trim().length > 0) || 'Укажите email',
   (v: unknown) => (typeof v === 'string' && /.[^\n\r@\u2028\u2029]*@.+\..+/.test(v)) || 'Некорректный email',
@@ -55,59 +57,74 @@ function onOpenUpdate(value: boolean) {
 <template>
   <Dialog.Root :open="props.open" @update:open="onOpenUpdate">
     <Dialog.Content
-      class="fixed inset-0 m-auto h-fit max-w-md rounded-lg border border-black/10 bg-surface p-6 shadow-xl backdrop:bg-black/40"
+      class="fixed inset-0 m-auto h-fit max-w-lg rounded-3xl border hairline bg-surface-elevated p-7 shadow-[0_40px_120px_-40px_rgba(0,0,0,0.4)] backdrop:bg-black/40"
     >
-      <Dialog.Title class="text-lg font-semibold">
-        Подтверждение брони
-      </Dialog.Title>
-      <Dialog.Description class="mt-1 text-sm opacity-75">
-        Укажите имя и email — бронь на один заранее заданный слот.
-      </Dialog.Description>
+      <header class="flex flex-col gap-1 border-b hairline pb-5">
+        <span class="eyebrow">Подтверждение</span>
+        <Dialog.Title class="font-display text-3xl text-ink">
+          Забронировать встречу
+        </Dialog.Title>
+        <Dialog.Description class="text-sm text-ink-soft">
+          Слот удерживается, пока вы заполняете форму. Укажите имя и email — мы пришлём подтверждение.
+        </Dialog.Description>
+      </header>
 
       <dl
         v-if="props.eventType && props.slotValue"
-        class="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 rounded-md bg-primary/5 p-3 text-sm"
+        class="mt-5 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 rounded-2xl border hairline bg-surface p-4 text-sm"
       >
-        <dt class="opacity-60">
-          Тип:
+        <dt class="eyebrow mt-1">
+          Тип
         </dt>
-        <dd class="font-medium">
-          {{ props.eventType.name }} · {{ props.eventType.duration }} мин
+        <dd class="font-display text-lg text-ink">
+          {{ props.eventType.name }}
+          <span class="ml-1 text-sm text-ink-faint">· {{ props.eventType.duration }} мин</span>
         </dd>
-        <dt class="opacity-60">
-          Начало:
+        <dt class="eyebrow mt-1">
+          Начало
         </dt>
-        <dd class="font-medium">
+        <dd class="font-medium text-ink">
           {{ formatDateTime(props.slotValue.startTime) }}
         </dd>
-        <dt class="opacity-60">
-          Окончание:
+        <dt class="eyebrow mt-1">
+          Окончание
         </dt>
-        <dd class="font-medium">
+        <dd class="font-medium text-ink">
           {{ formatTime(props.slotValue.endTime) }}
         </dd>
       </dl>
 
       <Form
         v-model="valid"
-        class="mt-4 flex flex-col gap-3"
+        class="mt-5 flex flex-col gap-4"
         @submit="onSubmit"
       >
-        <FormField v-model="form.guestName" label="Имя" :rules="nameRules" />
-        <FormField v-model="form.guestEmail" label="Email" type="email" :rules="emailRules" />
+        <FormField
+          v-model="form.guestName"
+          label="Имя"
+          placeholder="Как к вам обращаться?"
+          :rules="nameRules"
+        />
+        <FormField
+          v-model="form.guestEmail"
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+          :rules="emailRules"
+        />
 
         <AppAlert v-if="props.serverError" severity="error">
           {{ props.serverError }}
         </AppAlert>
 
-        <div class="mt-2 flex justify-end gap-2">
+        <div class="mt-3 flex justify-end gap-2 border-t hairline pt-4">
           <Dialog.Close as-child>
             <AppButton variant="outline" :disabled="props.submitting">
               Отмена
             </AppButton>
           </Dialog.Close>
-          <AppButton type="submit" :disabled="props.submitting">
-            {{ props.submitting ? 'Бронируем…' : 'Забронировать' }}
+          <AppButton type="submit" variant="primary" :disabled="props.submitting">
+            {{ props.submitting ? 'Бронируем…' : 'Подтвердить' }}
           </AppButton>
         </div>
       </Form>
