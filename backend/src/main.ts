@@ -26,8 +26,9 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(4010);
-  console.log('Backend listening on http://localhost:4010');
+  const port = process.env.PORT ?? 4010;
+  await app.listen(port);
+  console.log(`Backend listening on http://localhost:${port}`);
 }
 
 bootstrap();
