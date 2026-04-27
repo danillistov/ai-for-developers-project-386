@@ -1,10 +1,7 @@
 import type { FullConfig } from '@playwright/test'
 import { request } from '@playwright/test'
 import { writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { BACKEND_URL, type Fixtures } from './helpers'
-
-const FIXTURE_PATH = resolve(__dirname, '.fixtures.json')
+import { BACKEND_URL, type Fixtures, FIXTURE_PATH } from './helpers'
 
 export default async function globalSetup(_config: FullConfig): Promise<void> {
   const ctx = await request.newContext()

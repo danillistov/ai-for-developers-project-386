@@ -81,6 +81,8 @@ function selectDay(key: string, hasSlots: boolean) {
           v-for="day in days"
           :key="day.key"
           type="button"
+          data-testid="day-button"
+          :data-day-key="day.key"
           :disabled="day.slots.length === 0"
           :aria-pressed="day.key === activeKey"
           class="flex flex-col items-center gap-0.5 rounded-xl border px-2 py-2 transition-colors"
