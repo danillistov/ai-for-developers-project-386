@@ -65,3 +65,4 @@ temp/
 
 # Claude Code
 /.claude/skills/
+/.agents/
