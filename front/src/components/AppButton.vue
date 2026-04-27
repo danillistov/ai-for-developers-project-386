@@ -41,6 +41,16 @@ const classes = computed(() => [
   sizeClass[props.size],
   props.block && 'w-full',
 ])
+
+// Button.Root from @vuetify/v0 always forces type="button" on its element,
+// overriding any type attr passed from outside. To make type="submit" work,
+// we manually call requestSubmit() on the parent form.
+function handleClick(event: MouseEvent) {
+  if (props.type === 'submit' && !props.as) {
+    const form = (event.target as HTMLElement).closest('form')
+    form?.requestSubmit()
+  }
+}
 </script>
 
 <template>
@@ -50,6 +60,7 @@ const classes = computed(() => [
     :type="as ? undefined : type"
     :disabled="disabled"
     :class="classes"
+    @click="handleClick"
   >
     <Button.Content class="flex items-center gap-1.5">
       <slot name="leading" />

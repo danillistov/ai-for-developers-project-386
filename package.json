@@ -6,9 +6,13 @@
   "tspMain": "api.tsp",
   "scripts": {
     "compile": "tsp compile .",
-    "emit": "tsp compile . --emit @typespec/openapi3"
+    "emit": "tsp compile . --emit @typespec/openapi3",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:install": "playwright install --with-deps chromium"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@typespec/compiler": "^1.11.0",
     "@typespec/http": "^1.11.0",
     "@typespec/openapi3": "^1.11.0",

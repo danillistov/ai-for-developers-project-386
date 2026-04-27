@@ -55,8 +55,9 @@ function onOpenUpdate(value: boolean) {
 </script>
 
 <template>
-  <Dialog.Root :open="props.open" @update:open="onOpenUpdate">
+  <Dialog.Root :model-value="props.open" @update:model-value="onOpenUpdate">
     <Dialog.Content
+      data-testid="booking-dialog"
       class="fixed inset-0 m-auto h-fit max-w-lg rounded-3xl border hairline bg-surface-elevated p-7 shadow-[0_40px_120px_-40px_rgba(0,0,0,0.4)] backdrop:bg-black/40"
     >
       <header class="flex flex-col gap-1 border-b hairline pb-5">
@@ -123,7 +124,7 @@ function onOpenUpdate(value: boolean) {
               Отмена
             </AppButton>
           </Dialog.Close>
-          <AppButton type="submit" variant="primary" :disabled="props.submitting">
+          <AppButton type="submit" variant="primary">
             {{ props.submitting ? 'Бронируем…' : 'Подтвердить' }}
           </AppButton>
         </div>

@@ -20,6 +20,8 @@ const severityDot: Record<Severity, string> = {
           :id="item.id"
           :key="item.id"
           :role="ariaRoleFor(item.severity as Severity)"
+          :data-testid="`snackbar-${item.severity}`"
+          data-test="snackbar"
           class="pointer-events-auto flex min-w-[280px] max-w-sm items-start gap-3 rounded-xl border hairline bg-surface-elevated px-4 py-3 text-sm text-ink shadow-[0_12px_32px_-16px_rgba(20,20,20,0.35)]"
         >
           <span
