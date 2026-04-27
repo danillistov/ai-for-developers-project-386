@@ -6,8 +6,9 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173';
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: frontendUrl,
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Accept'],
   });
@@ -28,7 +29,7 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 4010;
   await app.listen(port);
-  console.log(`Backend listening on http://localhost:${port}`);
+  console.log(`Backend listening on port ${port}`);
 }
 
 bootstrap();

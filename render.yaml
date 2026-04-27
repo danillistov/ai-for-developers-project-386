@@ -1,0 +1,40 @@
+services:
+  # ── Backend (NestJS) ──────────────────────────────────────────────────────
+  - type: web
+    name: calendar-booking-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: /var/data/booking.sqlite
+      # Set to the frontend service URL after first deploy
+      # e.g. https://calendar-booking-frontend.onrender.com
+      - key: FRONTEND_URL
+        sync: false
+    disk:
+      name: sqlite-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  # ── Frontend (Vue 3 / Vite) ───────────────────────────────────────────────
+  - type: web
+    name: calendar-booking-frontend
+    env: static
+    rootDir: front
+    buildCommand: npm install && npm run build-only
+    staticPublishPath: dist
+    plan: free
+    envVars:
+      # Set to the backend service URL after first deploy
+      # e.g. https://calendar-booking-backend.onrender.com/api
+      - key: VITE_API_BASE_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
