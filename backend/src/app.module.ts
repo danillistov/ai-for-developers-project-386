@@ -9,7 +9,7 @@ import { Booking } from './bookings/booking.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'better-sqlite3',
-      database: 'booking.sqlite',
+      database: process.env.DATABASE_PATH ?? 'booking.sqlite',
       entities: [EventType, Booking],
       synchronize: true,
       logging: false,

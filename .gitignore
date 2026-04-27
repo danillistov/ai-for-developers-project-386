@@ -55,3 +55,14 @@ $RECYCLE.BIN/
 *.log
 tmp/
 temp/
+
+# Playwright
+/playwright-report/
+/test-results/
+/.playwright/
+/playwright/.cache/
+/.playwright-cli/
+
+# Claude Code
+/.claude/skills/
+/.agents/

@@ -33,6 +33,10 @@ const slotsQ = useQuery({
   query: () => eventTypesApi.listSlots(props.id),
 })
 
+const futureSlots = computed(
+  () => slotsQ.data.value?.filter(s => new Date(s.startTime) > new Date()) ?? undefined,
+)
+
 const selected = shallowRef<Slot | null>(null)
 const dialogOpen = ref(false)
 
@@ -162,7 +166,7 @@ function onDialogOpen(open: boolean) {
         </AppAlert>
         <SlotPicker
           v-else
-          :slots="slotsQ.data.value"
+          :slots="futureSlots"
           :selected="selected"
           @select="onSlotSelect"
         />

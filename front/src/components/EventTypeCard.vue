@@ -11,6 +11,8 @@ withDefaults(defineProps<{
 
 <template>
   <article
+    data-testid="event-type-card"
+    :data-event-type-id="eventType.id"
     class="surface-card group flex h-full flex-col gap-4 overflow-hidden transition-all hover:border-[color:var(--color-accent-soft)]"
     :class="variant === 'feature' ? 'p-6 md:p-7' : 'p-5'"
   >

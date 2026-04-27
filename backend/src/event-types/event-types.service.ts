@@ -62,7 +62,7 @@ export class EventTypesService {
       while (slotStart.getTime() + durationMs <= workEnd.getTime()) {
         const slotEnd = new Date(slotStart.getTime() + durationMs);
 
-        if (slotEnd.getTime() > now.getTime()) {
+        if (slotStart.getTime() > now.getTime()) {
           const overlaps = allBookings.some((b) => {
             const bStart = new Date(b.startTime).getTime();
             const bEnd = new Date(b.endTime).getTime();
